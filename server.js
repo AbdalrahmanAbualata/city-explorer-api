@@ -44,7 +44,7 @@ server.get('/weather',(req,res)=>{
     res.status(200).send(weaArr);
     }
    else{
-    res.status(404).send('not found')
+    res.status(500).send('not found')
    }
 })
 
