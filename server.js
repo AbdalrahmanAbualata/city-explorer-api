@@ -9,8 +9,14 @@ const server = express();
 const PORT = process.env.PORT;
 server.use(cors());
 
+class CityWeather {
+    constructor(item) {
+      this.date =item.valid_date;
+      this.descreption = item.weather.description;
+    }
+  }
 
-
+  
 //localhost:3001/
 server.get('/',(req,res)=>{
     res.send('home route')
@@ -30,8 +36,12 @@ server.get('/weather',(req,res)=>{
         
     })
     if (weatherForCity) {
-        console.log(weatherForCity);
-    res.status(200).send(weatherForCity);
+        let weaArr = weatherForCity.data.map((elem) => {
+            return new CityWeather(elem) ;
+         });
+
+      
+    res.status(200).send(weaArr);
     }
    else{
     res.status(404).send('not found')
