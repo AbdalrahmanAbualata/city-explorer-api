@@ -17,7 +17,7 @@ server.get('/',(req,res)=>{
 })
 
 
-// localhost:3006/weather?cityName=seattle 
+// localhost:5001/weather?cityName=seattle&lon=x&lat=y
 server.get('/weather',(req,res)=>{
     console.log(req.query);
     let cityName = req.query.cityName;
@@ -29,8 +29,13 @@ server.get('/weather',(req,res)=>{
         }
         
     })
-    console.log(weatherForCity);
+    if (weatherForCity) {
+        console.log(weatherForCity);
     res.status(200).send(weatherForCity);
+    }
+   else{
+    res.status(404).send('not found')
+   }
 })
 
 
