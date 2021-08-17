@@ -3,69 +3,108 @@
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors')
-const weatherData = require('./data/weather.json')
-
+// const weatherData = require('./data/weather.json')
+const axios = require('axios')
 const server = express();
 const PORT = process.env.PORT;
 server.use(cors());
 
 class CityWeather {
-    constructor(item) {
-        this.date = item.valid_date;
-        this.descreption = item.weather.description;
+    constructor(elem) {
+        this.date = elem.valid_date;
+        this.descreption = `Low of ${elem.low_temp}, high of ${elem.max_temp} with ${elem.weather.description}`
     }
 }
 
+class Movie {
+    constructor(elem) {
+      this.title = elem.title;
+      this.date =elem.release_date;
+      this.overview =elem.overview;
+      this.vote =elem.vote_count;
+      this.avgVote = elem.vote_average;
+      this.src = `https://image.tmdb.org/t/p/original${elem.poster_path}`;
+    }
+  }
 
-//localhost:3001/
-server.get('/', (req, res) => {
+
+server.get('/', homeHandler); // check branch clab03 to see the another way .
+server.get('/weather', getDataWeather);
+server.get('/movies', getDataMovies);
+server.get('*', notFoundHandler);
+
+
+
+
+//localhost:5001/
+function homeHandler(req, res) {
     res.send('home route')
-})
+}
 
 
-// localhost:5001/weather?cityName=seattle&lon=x&lat=y
-server.get('/weather', (req, res) => {
-    console.log(req.query);
-    let cityName = req.query.cityName;
-    console.log(cityName);
-    let weatherForCity = weatherData.find(obj => {
-        if (obj.city_name.toLowerCase() === cityName.toLowerCase()) { //toLocaleLowerCase() her locale
-            console.log(obj.city_name);
-            return obj;
+// localhost:5001/weather?lon=-122.3300624&lat=47.6038321
+function getDataWeather
+(req, res) {
+
+    console.log(req.query.lon);
+    console.log(req.query.lat);
+
+    let cityLonQ = Number(req.query.lon);
+    let cityLatQ = Number(req.query.lat);
+
+    // https://api.weatherbit.io/v2.0/forecast/daily?key=<KEY&lat=<LAT&lon=<LON&days=NUM_OF_DAYS3
+    let weatherUrl = `https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.WEATHER_API_KEY}&lat=${cityLatQ}&lon=${cityLonQ}&days=${5}`
+    try {
+        axios.get(weatherUrl).then((weatherData) => {
+            console.log(weatherData);
+
+            let weaArr = weatherData.data.data.map((elem) => {
+                return new CityWeather(elem);
+            })
+
+            res.status(200).send(weaArr) 
+        })
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send('not found');
         }
+    }
+// ************************************************************************************************************************
+// localhost:5001/movies?cityName=amman
+function getDataMovies (req, res) {
 
-    })
+    console.log(req.query.cityName);
+  
+
+    let cityName =req.query.cityName;
+    
 
     
-// try{
-//     let weaArr = weatherForCity.data.map((elem) => {  //we can use try here S
-//         return new CityWeather(elem);
-//     });
-//     res.status(200).send(weaArr);
-// }catch(error){
-//     console.log(error);
-//     res.status(500).send('not found')
-// }
+        let movieUrl = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&query=${cityName}&include_adult=false`
+    try {
+        axios.get(movieUrl).then((movieData) => {
+            console.log(movieData);
 
+            let weaArr = movieData.data.results.map((elem) => {
+                return new Movie(elem);
+            })
 
+            res.status(200).send(weaArr) 
+        })
 
-    if (weatherForCity) {
-        let weaArr = weatherForCity.data.map((elem) => {  //we can use try here S
-            return new CityWeather(elem);
-        });
-
-
-        res.status(200).send(weaArr);
+        } catch (error) {
+            console.log(error);
+            res.status(500).send('not found');
+        }
     }
-    else {
-        res.status(500).send('not found')
-    }
-})
 
 
-server.get('*', (req, res) => {
+// ***********************************************************************************************************************************
+function notFoundHandler(req, res) {
     res.status(404).send('not found')
-})
+}
+
 
 
 
