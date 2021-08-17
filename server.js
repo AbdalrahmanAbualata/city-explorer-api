@@ -23,31 +23,26 @@ server.get('/', (req, res) => {
 })
 
 
+
+
+
 // localhost:5001/weather?cityName=seattle&lon=x&lat=y
 server.get('/weather', (req, res) => {
-    console.log(req.query);
+    console.log(req.query.cityName);
+    console.log(req.query.lon);
+    console.log(req.query.lat);
+
     let cityName = req.query.cityName;
+    let cityLon = req.query.lon;
+    let cityLat =req.query.lat;
     console.log(cityName);
     let weatherForCity = weatherData.find(obj => {
+
         if (obj.city_name.toLowerCase() === cityName.toLowerCase()) { //toLocaleLowerCase() her locale
             console.log(obj.city_name);
             return obj;
         }
-
     })
-
-    
-// try{
-//     let weaArr = weatherForCity.data.map((elem) => {  //we can use try here S
-//         return new CityWeather(elem);
-//     });
-//     res.status(200).send(weaArr);
-// }catch(error){
-//     console.log(error);
-//     res.status(500).send('not found')
-// }
-
-
 
     if (weatherForCity) {
         let weaArr = weatherForCity.data.map((elem) => {  //we can use try here S
@@ -60,6 +55,17 @@ server.get('/weather', (req, res) => {
     else {
         res.status(500).send('not found')
     }
+
+// try{
+//     let weaArr = weatherForCity.data.map((elem) => {  //we can use try here S
+//         return new CityWeather(elem);
+//     });
+//     res.status(200).send(weaArr);
+// }catch(error){
+//     console.log(error);
+//     res.status(500).send('not found')
+// }
+ 
 })
 
 
