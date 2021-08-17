@@ -36,7 +36,7 @@ server.get('/weather',(req,res)=>{
         
     })
     if (weatherForCity) {
-        let weaArr = weatherForCity.data.map((elem) => {
+        let weaArr = weatherForCity.data.map((elem) => {  //we can use try here S
             return new CityWeather(elem) ;
          });
 
