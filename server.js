@@ -29,7 +29,7 @@ server.get('/weather',(req,res)=>{
     let cityName = req.query.cityName;
     console.log(cityName);
     let weatherForCity = weatherData.find(obj=>{
-        if(obj.city_name.toLowerCase()===cityName) { //toLocaleLowerCase() her locale
+        if(obj.city_name.toLowerCase()===cityName.toLowerCase()) { //toLocaleLowerCase() her locale
             console.log(obj.city_name);
             return obj;
         }
