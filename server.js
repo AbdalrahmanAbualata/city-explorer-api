@@ -1,5 +1,5 @@
 "use strict";
- 
+
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors')
@@ -11,50 +11,64 @@ server.use(cors());
 
 class CityWeather {
     constructor(item) {
-      this.date =item.valid_date;
-      this.descreption = item.weather.description;
+        this.date = item.valid_date;
+        this.descreption = item.weather.description;
     }
-  }
+}
 
-  
+
 //localhost:3001/
-server.get('/',(req,res)=>{
+server.get('/', (req, res) => {
     res.send('home route')
 })
 
 
 // localhost:5001/weather?cityName=seattle&lon=x&lat=y
-server.get('/weather',(req,res)=>{
+server.get('/weather', (req, res) => {
     console.log(req.query);
     let cityName = req.query.cityName;
     console.log(cityName);
-    let weatherForCity = weatherData.find(obj=>{
-        if(obj.city_name.toLowerCase()===cityName.toLowerCase()) { //toLocaleLowerCase() her locale
+    let weatherForCity = weatherData.find(obj => {
+        if (obj.city_name.toLowerCase() === cityName.toLowerCase()) { //toLocaleLowerCase() her locale
             console.log(obj.city_name);
             return obj;
         }
-        
+
     })
+
+    
+// try{
+//     let weaArr = weatherForCity.data.map((elem) => {  //we can use try here S
+//         return new CityWeather(elem);
+//     });
+//     res.status(200).send(weaArr);
+// }catch(error){
+//     console.log(error);
+//     res.status(500).send('not found')
+// }
+
+
+
     if (weatherForCity) {
         let weaArr = weatherForCity.data.map((elem) => {  //we can use try here S
-            return new CityWeather(elem) ;
-         });
+            return new CityWeather(elem);
+        });
 
-      
-    res.status(200).send(weaArr);
+
+        res.status(200).send(weaArr);
     }
-   else{
-    res.status(500).send('not found')
-   }
+    else {
+        res.status(500).send('not found')
+    }
 })
 
 
-server.get('*',(req,res)=>{
+server.get('*', (req, res) => {
     res.status(404).send('not found')
 })
 
 
 
-server.listen(PORT,()=>{
+server.listen(PORT, () => {
     console.log(`Listning on PORT ${PORT}`)
 })
