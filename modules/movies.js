@@ -1,15 +1,24 @@
 const axios = require('axios')
 module.exports = getDataMovies; 
 
+
+let moviesDataInMem = {};
+
+
 function getDataMovies (req, res) {
-
     console.log(req.query.cityName);
-  
-
     let cityName =req.query.cityName;
-    
 
-    
+
+
+
+    if (moviesDataInMem[cityName] !== undefined) {
+        console.log(' cache hit , data in cache memory');
+        res.send(moviesDataInMem[cityName]);
+    }
+
+
+else{
         let movieUrl = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.MOVIE_API_KEY}&query=${cityName}&include_adult=false`
     try {
         axios.get(movieUrl).then((movieData) => {
@@ -18,7 +27,7 @@ function getDataMovies (req, res) {
             let weaArr = movieData.data.results.map((elem) => {
                 return new Movie(elem);
             })
-
+            moviesDataInMem[cityName]=weaArr;
             res.status(200).send(weaArr) 
         })
 
@@ -27,8 +36,10 @@ function getDataMovies (req, res) {
             res.status(500).send('not found');
         }
     }
-
+}
     
+
+// *******************************************************************************************************************************
 class Movie {
     constructor(elem) {
       this.title = elem.title;

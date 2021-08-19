@@ -10,11 +10,11 @@ const getDataWeather =require("./modules/weather.js");
 const getDataMovies =require("./modules/movies.js");
 
 
-// localhost:5001/
+// localhost:5002/
 server.get('/', homeHandler); 
-// localhost:5001/weather?lon=-122.3300624&lat=47.6038321
+// localhost:5002/weather?lon=-122.3300624&lat=47.6038321&cityName=amman
 server.get('/weather', getDataWeather);
-// localhost:5001/movies?cityName=amman
+// localhost:5002/movies?cityName=amman
 server.get('/movies', getDataMovies);
 
 server.get('*', notFoundHandler);
